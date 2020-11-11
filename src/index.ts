@@ -1,9 +1,10 @@
-export const hello = (name: string): string => {
-  const params = {
-    hoge: 1,
-    fuga: 2,
-  };
-  return `Hello ${name} ${JSON.stringify(params)}`;
+import { wrapAsync } from "./server";
+
+const wait = async (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
+
+const main = async () => {
+  const newWait = wrapAsync(wait);
+  await Promise.all([newWait(5000), newWait(5000), newWait(5000), newWait(5000)]);
 };
 
-console.log(hello("Your name"));
+main().catch(console.error);

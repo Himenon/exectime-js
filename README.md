@@ -1,6 +1,47 @@
-# @himenon/node-lib-template
+# @himenon/ticktack
+
+Tool to measure execution time of CLI and JavaScript.
 
 ## Usage
+
+Install
+
+```bash
+yarn add -D @himenon/ticktack
+```
+
+### CLI
+
+```ts
+export TICKTACK_OUTPUT_PATH="performance.json"z
+
+ticktack --label "build" --tag "yarn" --command "yarn run build"
+```
+
+### API
+
+```ts
+import * as Ticktack from "@himenon/ticktack";
+
+const wait = async ms => new Promise(resolve => setTimeout(resolve, ms));
+
+const wrappedWait = Ticktack.wrap(wait, { label: "wait", tag: "default" });
+
+const main = async () => {
+  await wrappedWait(5000);
+  await Ticktack.exec(() => wait(), { label: "wait", tag: "perf" });
+
+  Ticktack.getResult(); // default all
+  Ticktack.getResult({
+    label: (label: string) => ["wait", "hoge"].includes(label),
+    tag: (tag: string) => ["wait", "hoge"].includes(tag),
+  });
+};
+
+main().catch(console.error);
+```
+
+## Development
 
 | scripts                   | description                                 |
 | :------------------------ | :------------------------------------------ |
@@ -26,4 +67,4 @@
 
 ## LICENCE
 
-[@himenon-node-lib-template](https://github.com/Himenon/node-lib-template)・MIT
+[@himenon/ticktack](https://github.com/Himenon/ticktack-js)・MIT

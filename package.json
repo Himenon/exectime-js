@@ -1,20 +1,20 @@
 {
-  "name": "@himenon/node-lib-template",
-  "version": "0.0.5",
+  "name": "@himenon/ticktack",
+  "version": "0.0.1",
   "private": true,
-  "description": "node library template",
+  "description": "Tool to measure execution time of CLI and JavaScript",
   "keywords": [
     "template",
     "proxy directory",
     "typescript"
   ],
-  "homepage": "https://github.com/Himenon/node-lib-template#readme",
+  "homepage": "https://github.com/Himenon/ticktack-js#readme",
   "bugs": {
-    "url": "https://github.com/Himenon/node-lib-template/issues"
+    "url": "https://github.com/Himenon/ticktack-js/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:Himenon/node-lib-template.git"
+    "url": "git@github.com:Himenon/ticktack-js.git"
   },
   "license": "MIT",
   "author": {
