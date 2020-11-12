@@ -1,6 +1,8 @@
 import { PerformanceObserver, PerformanceEntry } from "perf_hooks";
 import { EventEmitter } from "events";
 
+export { PerformanceObserver, PerformanceEntry };
+
 interface State {
   list: PerformanceEntry[];
   executeQueue: string[];

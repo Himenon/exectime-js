@@ -1,6 +1,8 @@
-import { emitter } from "./core";
-import { v4 as generateUniqueId } from "uuid";
 import { performance } from "perf_hooks";
+import { emitter, PerformanceData, PerformanceMeasurementResult, convert, PerformanceObserver, PerformanceEntry } from "./core";
+import { v4 as generateUniqueId } from "uuid";
+
+export { PerformanceData, PerformanceMeasurementResult, convert, PerformanceObserver, PerformanceEntry };
 
 export interface WrapOption {
   name: string;
