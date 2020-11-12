@@ -1,4 +1,3 @@
-import "./clean";
 import { shell } from "./tools/shell";
 import { copyPackageSet } from "./tools/copyPackageSet";
 

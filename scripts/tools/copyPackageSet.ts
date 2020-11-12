@@ -1,4 +1,4 @@
-import * as fs from "fs";
+import * as fs from "fs-extra";
 import * as path from "path";
 import cpy from "cpy";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -20,5 +20,7 @@ export const copyPackageSet = async (): Promise<void> => {
     encoding: "utf-8",
   });
   await cpy(["README.md", "CHANGELOG.md", "LICENCE"], libDir);
+  fs.copySync("dist", path.join(libDir, "dist"));
+  fs.copySync("bin", path.join(libDir, "bin"));
   console.log("Files copied!");
 };

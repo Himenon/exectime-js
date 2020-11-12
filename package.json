@@ -4,9 +4,7 @@
   "private": true,
   "description": "Tool to measure execution time of CLI and JavaScript",
   "keywords": [
-    "template",
-    "proxy directory",
-    "typescript"
+    "performance"
   ],
   "homepage": "https://github.com/Himenon/ticktack-js#readme",
   "bugs": {
@@ -26,16 +24,12 @@
   "main": "lib/$cjs/index.js",
   "module": "lib/$esm/index.js",
   "types": "lib/$types/index.d.ts",
-  "directories": {
-    "lib": "lib"
+  "bin": {
+    "ticktack": "./bin/ticktack"
   },
-  "files": [
-    "lib",
-    "package.json"
-  ],
   "scripts": {
-    "build": "run-p build:ts build:webpack",
-    "build:ts": "yarn ts ./scripts/build.ts",
+    "build": "run-s clean build:webpack build:ts",
+    "build:ts": "yarn ts ./scripts/buildTs.ts",
     "build:webpack": "NODE_ENV=production webpack -c webpack.config.js",
     "clean": "yarn ts ./scripts/clean.ts",
     "develop:server": "NODE_ENV=development webpack serve -c webpack.config.js",
@@ -65,12 +59,14 @@
     "node-fetch": "2.6.1"
   },
   "dependencies": {
-    "commander": "^6.2.0",
+    "commander": "6.2.0",
+    "execa": "4.1.0",
     "uuid": "8.3.1"
   },
   "devDependencies": {
     "@commitlint/cli": "11.0.0",
     "@commitlint/config-conventional": "11.0.0",
+    "@types/fs-extra": "9.0.4",
     "@types/jest": "26.0.15",
     "@types/node": "14.14.7",
     "@types/rimraf": "3.0.0",
@@ -85,7 +81,7 @@
     "eslint": "7.13.0",
     "eslint-config-prettier": "6.14.0",
     "eslint-plugin-import": "2.22.1",
-    "execa": "^4.1.0",
+    "fs-extra": "9.0.1",
     "generate-changelog": "1.8.0",
     "html-webpack-plugin": "5.0.0-alpha.14",
     "husky": "4.3.0",
