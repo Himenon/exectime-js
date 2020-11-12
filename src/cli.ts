@@ -80,6 +80,7 @@ const createOrOverride = (filename: string, outputData: Ticktack.PerformanceMeas
   try {
     if (!fs.existsSync(filename)) {
       fs.writeFileSync(filename, JSON.stringify(outputData, null, 2), { encoding: "utf-8" });
+      info(`create ${filename}`);
       return;
     }
     const rawText = fs.readFileSync(filename, { encoding: "utf-8" });
@@ -90,8 +91,7 @@ const createOrOverride = (filename: string, outputData: Ticktack.PerformanceMeas
     restoreData.data = restoreData.data.concat(outputData.data);
 
     fs.writeFileSync(filename, JSON.stringify(restoreData, null, 2), { encoding: "utf-8" });
-
-    info(`generate: ${filename}`);
+    info(`update ${filename}`);
   } catch (error) {
     throw new Error(error);
   }
@@ -101,7 +101,7 @@ const main = async () => {
   const args = getCliArguments();
   const sh = Ticktack.wrapAsync(shell, { name: args.name });
   const { stdout } = await sh(args.command);
-  process.stdout.write(stdout);
+  process.stdout.write(stdout + EOL);
   const data = (await Ticktack.getResult()).map(entry => Ticktack.convert(now.getTime(), entry));
   const result: Ticktack.PerformanceMeasurementResult = {
     meta: {
