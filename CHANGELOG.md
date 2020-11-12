@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.1"></a>
+## 0.1.1 (2020-11-12)
+
+
+### Chores
+
+* 出力ログを選択できるようにした ([#6](https://github.com/Himenon/ticktack-js/issues/6)) ([5f232e6](https://github.com/Himenon/ticktack-js/commit/5f232e6))
+
+
+
+
+
 <a name="0.1.0"></a>
 # 0.1.0 (2020-11-12)
 
