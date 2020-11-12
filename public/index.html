@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= htmlWebpackPlugin.title %></title>
+  </head>
+
+  <body>
+    <h1>@himenon/ticktack</h1>
+    <h2>Sample Code</h2>
+    <code>
+      <pre>
+      const wait = async (ms) => new Promise(resolve => setTimeout(resolve, ms));
+      const perfWait = Ticktack.wrapAsync(wait, { name: "wait", label: "timer" });
+      await Promise.all([perfWait(1000), perfWait(500), perfWait(1200), perfWait(1300)]);
+      await Ticktack.getResult();
+      </pre>
+    </code>
+  </body>
+</html>

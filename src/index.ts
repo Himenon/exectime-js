@@ -1,10 +1,59 @@
-import { wrapAsync } from "./server";
+import { emitter } from "./core";
+import { v4 as generateUniqueId } from "uuid";
+import { performance } from "perf_hooks";
 
-const wait = async (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
+export interface WrapOption {
+  name: string;
+  label: string;
+}
 
-const main = async () => {
-  const newWait = wrapAsync(wait);
-  await Promise.all([newWait(5000), newWait(5000), newWait(5000), newWait(5000)]);
+/**
+ * 同期関数のWrapper
+ *
+ * @param fn
+ * @param option
+ */
+export const wrapSync = <T extends unknown[], K>(fn: (...args: T) => K, option: WrapOption): ((...args: T) => K) => {
+  const start = `start-${option.name}`;
+  const stop = `stop-${option.name}`;
+  const wrapFunc = (...args: T): K => {
+    const uid = generateUniqueId();
+    emitter.emit("add:exec:queue", uid);
+    performance.mark(start);
+    const returnValue = fn(...args);
+    performance.mark(stop);
+    performance.measure(option.label, start, stop);
+    emitter.emit("remove:exec:queue", uid);
+    return returnValue;
+  };
+  return wrapFunc;
 };
 
-main().catch(console.error);
+type GetPromiseValue<T> = T extends Promise<infer U> ? U : never;
+
+/**
+ * 非同期関数のWrapper
+ *
+ * @param fn
+ * @param option
+ */
+export const wrapAsync = <T extends unknown[], U extends Promise<unknown>, K extends GetPromiseValue<U>>(
+  fn: (...args: T) => Promise<K>,
+  option: WrapOption,
+): ((...args: T) => Promise<K>) => {
+  const start = `start-${option.name}`;
+  const stop = `stop-${option.name}`;
+  const wrapFunc = async (...args: T): Promise<K> => {
+    const uid = generateUniqueId();
+    emitter.emit("add:exec:queue", uid);
+    performance.mark(start);
+    const returnValue = await fn(...args);
+    performance.mark(stop);
+    performance.measure(option.label, start, stop);
+    emitter.emit("remove:exec:queue", uid);
+    return returnValue;
+  };
+  return wrapFunc;
+};
+
+export const getResult = emitter.getResult.bind(emitter);
