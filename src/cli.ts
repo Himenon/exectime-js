@@ -1,3 +1,4 @@
+import { EOL } from "os";
 import * as Ticktack from "./";
 import * as fs from "fs";
 import execa from "execa";
@@ -7,8 +8,12 @@ const pkg = require("../package.json");
 const version = pkg.version as string;
 const now = new Date();
 
+const info = (message: string) => {
+  process.stdout.write(`TickTack: ` + message + EOL);
+};
+
 export const shell = (command: string, cwd: string = process.cwd()): execa.ExecaChildProcess<string> => {
-  console.log(command);
+  info(command);
   return execa(command, {
     stdio: ["pipe", "pipe", "inherit"],
     shell: true,
@@ -24,18 +29,19 @@ export interface CLIArguments {
 
 const DEFAULT_NAME = "shell";
 const DEFAULT_OUTPUT_PATH = "ticktack.json";
+const ENV_TICKTACK_NAME = process.env.TICKTACK_NAME;
+const ENV_TICKTACK_OUTPUT_PATH = process.env.TICKTACK_OUTPUT_PATH;
 
 const validate = (args: commander.Command): CLIArguments => {
   if (typeof args["c"] !== "string") {
     throw new TypeError("Not string");
   }
   // cli arguments > ENV > DEFAULT_NAME
-  const name = args["n"] === DEFAULT_NAME ? process.env.TICKTACK_NAME || DEFAULT_NAME : args["n"] || process.env.TICKTACK_NAME;
+  const name = args["n"] === DEFAULT_NAME ? ENV_TICKTACK_NAME || DEFAULT_NAME : args["n"] || ENV_TICKTACK_NAME;
   if (!name || typeof name !== "string") {
     throw new TypeError("For '-n' or 'TICKTACK_NAME', specify a character string that is greater than or equal to the position character.");
   }
-  const output =
-    args["o"] === DEFAULT_OUTPUT_PATH ? process.env.TICKTACK_OUTPUT_PATH || DEFAULT_OUTPUT_PATH : args["o"] || process.env.TICKTACK_OUTPUT_PATH;
+  const output = args["o"] === DEFAULT_OUTPUT_PATH ? ENV_TICKTACK_OUTPUT_PATH || DEFAULT_OUTPUT_PATH : args["o"] || ENV_TICKTACK_OUTPUT_PATH;
   if (!name || typeof name !== "string") {
     throw new TypeError(
       "For '-o' or 'TICKTACK_OUTPUT_PATH', specify a character string that is greater than or equal to the position character.",
@@ -85,7 +91,7 @@ const createOrOverride = (filename: string, outputData: Ticktack.PerformanceMeas
 
     fs.writeFileSync(filename, JSON.stringify(restoreData, null, 2), { encoding: "utf-8" });
 
-    console.log(`\nOutput: ${filename}`);
+    info(`generate: ${filename}`);
   } catch (error) {
     throw new Error(error);
   }
@@ -93,7 +99,9 @@ const createOrOverride = (filename: string, outputData: Ticktack.PerformanceMeas
 
 const main = async () => {
   const args = getCliArguments();
-  await Ticktack.wrapAsync(shell, { name: args.name })(args.command);
+  const sh = Ticktack.wrapAsync(shell, { name: args.name });
+  const { stdout } = await sh(args.command);
+  process.stdout.write(stdout);
   const data = (await Ticktack.getResult()).map(entry => Ticktack.convert(now.getTime(), entry));
   const result: Ticktack.PerformanceMeasurementResult = {
     meta: {
