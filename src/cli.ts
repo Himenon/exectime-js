@@ -8,12 +8,14 @@ const pkg = require("../package.json");
 const version = pkg.version as string;
 const now = new Date();
 
-const info = (message: string) => {
-  process.stdout.write(`TickTack: ` + message + EOL);
+const info = (message: string, prefix = "TickTack: ") => {
+  if (message !== "") {
+    process.stdout.write(prefix + message + EOL);
+  }
 };
 
 export const shell = (command: string, cwd: string = process.cwd()): execa.ExecaChildProcess<string> => {
-  info(command);
+  info(command, "");
   return execa(command, {
     stdio: ["pipe", "pipe", "inherit"],
     shell: true,
@@ -24,11 +26,11 @@ export const shell = (command: string, cwd: string = process.cwd()): execa.Execa
 export interface CLIArguments {
   command: string;
   name: string;
-  output: string;
+  output: string | undefined;
+  isShowSettings: boolean;
 }
 
 const DEFAULT_NAME = "shell";
-const DEFAULT_OUTPUT_PATH = "ticktack.json";
 const ENV_TICKTACK_NAME = process.env.TICKTACK_NAME;
 const ENV_TICKTACK_OUTPUT_PATH = process.env.TICKTACK_OUTPUT_PATH;
 
@@ -41,16 +43,11 @@ const validate = (args: commander.Command): CLIArguments => {
   if (!name || typeof name !== "string") {
     throw new TypeError("For '-n' or 'TICKTACK_NAME', specify a character string that is greater than or equal to the position character.");
   }
-  const output = args["o"] === DEFAULT_OUTPUT_PATH ? ENV_TICKTACK_OUTPUT_PATH || DEFAULT_OUTPUT_PATH : args["o"] || ENV_TICKTACK_OUTPUT_PATH;
-  if (!name || typeof name !== "string") {
-    throw new TypeError(
-      "For '-o' or 'TICKTACK_OUTPUT_PATH', specify a character string that is greater than or equal to the position character.",
-    );
-  }
   return {
     command: args.c,
     name,
-    output,
+    output: ENV_TICKTACK_OUTPUT_PATH || args["o"],
+    isShowSettings: !!args["showSettings"],
   };
 };
 
@@ -66,8 +63,8 @@ const getCliArguments = (): CLIArguments => {
     .option(
       "-o [output path]",
       "Output json file path. It can also be specified by the environment variable `export TICKTACK_OUTPUT_PATH='ticktack.json'",
-      DEFAULT_OUTPUT_PATH,
     )
+    .option("--show-settings")
     .parse(process.argv);
   return validate(commander);
 };
@@ -97,11 +94,20 @@ const createOrOverride = (filename: string, outputData: Ticktack.PerformanceMeas
   }
 };
 
+const showSetting = (args: CLIArguments) => {
+  const result = [`output file path : ${args.output || ""}`, `name             : ${args.name}`, `command          : ${args.command}`].join(EOL);
+  info(result, "");
+};
+
 const main = async () => {
   const args = getCliArguments();
+  if (args.isShowSettings) {
+    showSetting(args);
+    return;
+  }
   const sh = Ticktack.wrapAsync(shell, { name: args.name });
   const { stdout } = await sh(args.command);
-  process.stdout.write(stdout + EOL);
+  info(stdout, "");
   const data = (await Ticktack.getResult()).map(entry => Ticktack.convert(now.getTime(), entry));
   const result: Ticktack.PerformanceMeasurementResult = {
     meta: {
@@ -111,7 +117,11 @@ const main = async () => {
     },
     data,
   };
-  createOrOverride(args.output, result);
+  if (args.output) {
+    createOrOverride(args.output, result);
+  } else {
+    info(JSON.stringify(result, null, 2), "");
+  }
 };
 
 main().catch(error => {

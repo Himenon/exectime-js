@@ -13,13 +13,22 @@ yarn global add @himenon/ticktack
 
 ```ts
 export TICKTACK_OUTPUT_PATH="performance.json"
-export TICKTACK_NAME = "my"
+export TICKTACK_NAME="my"
 
 // Use environment settings
 ticktack -c "sleep 2"
 
 // Use argument settings
 ticktack -n "sleepCommand" -o "ticktack.json" -c "sleep 5"
+```
+
+### Show current settings
+
+```bash
+$ ticktack -n "sleepCommand" -o "ticktack.json" -c "sleep 5" --show-settings
+output file path : ticktack.json
+name             : sleepCommand
+command          : sleep 5
 ```
 
 ## API
