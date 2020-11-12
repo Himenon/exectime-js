@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.0"></a>
+# 0.1.0 (2020-11-12)
+
+
+### Features
+
+* output optionをつけたときだけファイルを出力する ([#5](https://github.com/Himenon/ticktack-js/issues/5)) ([5bebbc3](https://github.com/Himenon/ticktack-js/commit/5bebbc3))
+
+
+
+
+
 <a name="0.0.5"></a>
 ## 0.0.5 (2020-11-12)
 
