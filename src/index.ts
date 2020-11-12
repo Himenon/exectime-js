@@ -57,4 +57,6 @@ export const wrapAsync = <T extends unknown[], U extends Promise<unknown>, K ext
   return wrapFunc;
 };
 
+export const reset = emitter.reset.bind(emitter);
+
 export const getResult = emitter.getResult.bind(emitter);
