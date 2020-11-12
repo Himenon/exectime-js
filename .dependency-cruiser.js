@@ -52,7 +52,7 @@ module.exports = {
     },
     {
       name: "not-to-dev-dep",
-      severity: "error",
+      severity: "warn",
       comment:
         "This module depends on an npm package from the 'devDependencies' section of your " +
         "package.json. It looks like something that ships to production, though. To prevent problems " +
