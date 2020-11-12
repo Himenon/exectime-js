@@ -25,10 +25,11 @@ ticktack -n "sleepCommand" -o "ticktack.json" -c "sleep 5"
 ### Show current settings
 
 ```bash
-$ ticktack -n "sleepCommand" -o "ticktack.json" -c "sleep 5" --show-settings
+$ ticktack -n "sleepCommand" -o "ticktack.json" -c "sleep 5" --show-log info,command  --show-settings
 output file path : ticktack.json
 name             : sleepCommand
 command          : sleep 5
+Show message type: info, command
 ```
 
 ## API
