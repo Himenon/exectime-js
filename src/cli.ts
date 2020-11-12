@@ -54,10 +54,14 @@ const getCliArguments = (): CLIArguments => {
     .option("-c [command]", "shell command")
     .option(
       "-n [name]",
-      "For performance recording. It can also be specified by the environment variable `export TICKTACK_NAME='perf'`",
+      "For performance recording. It can also be specified by the environment variable `export TICKTACK_NAME='shell'`",
       DEFAULT_NAME,
     )
-    .option("-o [output path]", "output json file path", DEFAULT_OUTPUT_PATH)
+    .option(
+      "-o [output path]",
+      "Output json file path. It can also be specified by the environment variable `export TICKTACK_OUTPUT_PATH='ticktack.json'",
+      DEFAULT_OUTPUT_PATH,
+    )
     .parse(process.argv);
   return validate(commander);
 };
@@ -67,16 +71,21 @@ const getCliArguments = (): CLIArguments => {
  * - ファイルが存在しない場合は作成する
  */
 const createOrOverride = (filename: string, outputData: Ticktack.PerformanceMeasurementResult): void => {
-  if (!fs.existsSync(filename)) {
-    fs.writeFileSync(filename, JSON.stringify(outputData, null, 2), { encoding: "utf-8" });
-  }
   try {
+    if (!fs.existsSync(filename)) {
+      fs.writeFileSync(filename, JSON.stringify(outputData, null, 2), { encoding: "utf-8" });
+      return;
+    }
     const rawText = fs.readFileSync(filename, { encoding: "utf-8" });
     const restoreData: Ticktack.PerformanceMeasurementResult = JSON.parse(rawText);
+
     restoreData.meta.version = outputData.meta.version;
     restoreData.meta.updatedAt = outputData.meta.updatedAt;
     restoreData.data = restoreData.data.concat(outputData.data);
+
     fs.writeFileSync(filename, JSON.stringify(restoreData, null, 2), { encoding: "utf-8" });
+
+    console.log(`\nOutput: ${filename}`);
   } catch (error) {
     throw new Error(error);
   }
