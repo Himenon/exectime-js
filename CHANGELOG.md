@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.0.5"></a>
+## 0.0.5 (2020-11-12)
+
+
+### Chores
+
+* update log message ([#4](https://github.com/Himenon/ticktack-js/issues/4)) ([f845019](https://github.com/Himenon/ticktack-js/commit/f845019))
+
+
+
+
+
 <a name="0.0.4"></a>
 ## 0.0.4 (2020-11-12)
 
