@@ -3,23 +3,26 @@
 Tool to measure execution time of CLI and JavaScript.
 It supports both the browser and NodeJS environments.
 
-## Usage
-
-Install
+## Install
 
 ```bash
-yarn add -D @himenon/ticktack
+yarn global add @himenon/ticktack
 ```
 
-### CLI
+## CLI
 
 ```ts
-export TICKTACK_OUTPUT_PATH="performance.json"z
+export TICKTACK_OUTPUT_PATH="performance.json"
+export TICKTACK_NAME = "my"
 
-ticktack --label "build" --tag "yarn" --command "yarn run build"
+// Use environment settings
+ticktack -c "sleep 2"
+
+// Use argument settings
+ticktack -n "sleepCommand" -o "ticktack.json" -c "sleep 5"
 ```
 
-### Usage
+## API
 
 ```ts
 import * as Ticktack from "@himenon/ticktack";
@@ -43,7 +46,7 @@ await Ticktack.getResult();
 | `test:depcruise`          | dependency-cruiser's test                   |
 | `test:jest`               | jest test                                   |
 | `ts`                      | execute ts-node                             |
-| `release:github:registry` | publish github registry                     |
+| `release:github:registry` | publish GitHub registry                     |
 | `release:npm:registry`    | publish npm registry                        |
 
 ## Features
