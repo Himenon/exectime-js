@@ -10,7 +10,7 @@ module.exports = {
   optimization: {
     minimize: isProduction,
   },
-  entry: path.join(process.cwd(), isProduction ? "./src/index.ts" : "./src/devServerEntry.ts"),
+  entry: path.join(process.cwd(), isProduction ? "./src/index.ts" : "./src/develop/index.ts"),
   target: ["web"],
   output: {
     path: path.join(process.cwd(), "dist"),
