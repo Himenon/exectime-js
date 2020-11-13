@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.2"></a>
+## 0.1.2 (2020-11-13)
+
+
+### Bug Fixes
+
+* cherry-pick ([#7](https://github.com/Himenon/ticktack-js/issues/7)) ([170675e](https://github.com/Himenon/ticktack-js/commit/170675e))
+
+
+
+
+
 <a name="0.1.1"></a>
 ## 0.1.1 (2020-11-12)
 
