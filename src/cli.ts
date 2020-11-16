@@ -1,5 +1,5 @@
 import { EOL } from "os";
-import * as Ticktack from "./";
+import * as Exectime from "./";
 import * as fs from "fs";
 import execa from "execa";
 import commander from "commander";
@@ -8,7 +8,7 @@ const pkg = require("../package.json");
 const version = pkg.version as string;
 const now = new Date();
 
-const info = (message: string, prefix = "TickTack: ") => {
+const info = (message: string, prefix = "Exectime: ") => {
   if (message !== "") {
     process.stdout.write(prefix + message + EOL);
   }
@@ -31,22 +31,22 @@ export interface CLIArguments {
 }
 
 const DEFAULT_NAME = "shell";
-const ENV_TICKTACK_NAME = process.env.TICKTACK_NAME;
-const ENV_TICKTACK_OUTPUT_PATH = process.env.TICKTACK_OUTPUT_PATH;
+const ENV_EXECTIME_NAME = process.env.EXECTIME_NAME;
+const ENV_EXECTIME_OUTPUT_PATH = process.env.EXECTIME_OUTPUT_PATH;
 
 const validate = (args: commander.Command): CLIArguments => {
   if (typeof args["c"] !== "string") {
     throw new TypeError("Not string");
   }
   // cli arguments > ENV > DEFAULT_NAME
-  const name = args["n"] === DEFAULT_NAME ? ENV_TICKTACK_NAME || DEFAULT_NAME : args["n"] || ENV_TICKTACK_NAME;
+  const name = args["n"] === DEFAULT_NAME ? ENV_EXECTIME_NAME || DEFAULT_NAME : args["n"] || ENV_EXECTIME_NAME;
   if (!name || typeof name !== "string") {
-    throw new TypeError("For '-n' or 'TICKTACK_NAME', specify a character string that is greater than or equal to the position character.");
+    throw new TypeError("For '-n' or 'EXECTIME_NAME', specify a character string that is greater than or equal to the position character.");
   }
   return {
     command: args.c,
     name,
-    output: ENV_TICKTACK_OUTPUT_PATH || args["o"],
+    output: ENV_EXECTIME_OUTPUT_PATH || args["o"],
     isShowSettings: !!args["showSettings"],
   };
 };
@@ -57,12 +57,12 @@ const getCliArguments = (): CLIArguments => {
     .option("-c [command]", "shell command")
     .option(
       "-n [name]",
-      "For performance recording. It can also be specified by the environment variable `export TICKTACK_NAME='shell'`",
+      "For performance recording. It can also be specified by the environment variable `export EXECTIME_NAME='shell'`",
       DEFAULT_NAME,
     )
     .option(
       "-o [output path]",
-      "Output json file path. It can also be specified by the environment variable `export TICKTACK_OUTPUT_PATH='ticktack.json'",
+      "Output json file path. It can also be specified by the environment variable `export EXECTIME_OUTPUT_PATH='exectime.json'",
     )
     .option("--show-settings")
     .parse(process.argv);
@@ -73,7 +73,7 @@ const getCliArguments = (): CLIArguments => {
  * - すでにファイルが存在する場合は上書きする
  * - ファイルが存在しない場合は作成する
  */
-const createOrOverride = (filename: string, outputData: Ticktack.PerformanceMeasurementResult): void => {
+const createOrOverride = (filename: string, outputData: Exectime.PerformanceMeasurementResult): void => {
   try {
     if (!fs.existsSync(filename)) {
       fs.writeFileSync(filename, JSON.stringify(outputData, null, 2), { encoding: "utf-8" });
@@ -81,7 +81,7 @@ const createOrOverride = (filename: string, outputData: Ticktack.PerformanceMeas
       return;
     }
     const rawText = fs.readFileSync(filename, { encoding: "utf-8" });
-    const restoreData: Ticktack.PerformanceMeasurementResult = JSON.parse(rawText);
+    const restoreData: Exectime.PerformanceMeasurementResult = JSON.parse(rawText);
 
     restoreData.meta.version = outputData.meta.version;
     restoreData.meta.updatedAt = outputData.meta.updatedAt;
@@ -105,11 +105,11 @@ const main = async () => {
     showSetting(args);
     return;
   }
-  const sh = Ticktack.wrapAsync(shell, { name: args.name });
+  const sh = Exectime.wrapAsync(shell, { name: args.name });
   const { stdout } = await sh(args.command);
   info(stdout, "");
-  const data = (await Ticktack.getResult()).map(entry => Ticktack.convert(now.getTime(), entry));
-  const result: Ticktack.PerformanceMeasurementResult = {
+  const data = (await Exectime.getResult()).map(entry => Exectime.convert(now.getTime(), entry));
+  const result: Exectime.PerformanceMeasurementResult = {
     meta: {
       version,
       createdAt: now.toISOString(),

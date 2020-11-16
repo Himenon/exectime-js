@@ -1,18 +1,18 @@
 {
-  "name": "@himenon/ticktack",
+  "name": "@himenon/exectime",
   "version": "0.1.0",
   "private": true,
   "description": "Tool to measure execution time of CLI and JavaScript",
   "keywords": [
     "performance"
   ],
-  "homepage": "https://github.com/Himenon/ticktack-js#readme",
+  "homepage": "https://github.com/Himenon/exectime-js#readme",
   "bugs": {
-    "url": "https://github.com/Himenon/ticktack-js/issues"
+    "url": "https://github.com/Himenon/exectime-js/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:Himenon/ticktack-js.git"
+    "url": "git@github.com:Himenon/exectime-js.git"
   },
   "license": "MIT",
   "author": {
@@ -25,7 +25,7 @@
   "module": "lib/$esm/index.js",
   "types": "lib/$types/index.d.ts",
   "bin": {
-    "ticktack": "./bin/ticktack"
+    "exectime": "./bin/exectime"
   },
   "scripts": {
     "build": "run-s clean build:webpack build:ts",

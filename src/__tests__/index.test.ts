@@ -1,4 +1,4 @@
-import * as Ticktack from "../index";
+import * as Exectime from "../index";
 
 const wait = async (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
 const loop = (count: number) => {
@@ -10,11 +10,11 @@ const loop = (count: number) => {
 };
 
 describe("performance test", () => {
-  const wrapWait = Ticktack.wrapAsync(wait, { name: "wait" });
-  const wrapLoop = Ticktack.wrapSync(loop, { name: "loop" });
+  const wrapWait = Exectime.wrapAsync(wait, { name: "wait" });
+  const wrapLoop = Exectime.wrapSync(loop, { name: "loop" });
   test("sync function", async done => {
     wrapLoop(1000);
-    const result = await Ticktack.getResult();
+    const result = await Exectime.getResult();
     expect(result.length).toEqual(1);
     done();
   });
@@ -22,14 +22,14 @@ describe("performance test", () => {
   test("async function", async done => {
     await wrapWait(100);
     await wrapWait(200);
-    const result = await Ticktack.getResult();
+    const result = await Exectime.getResult();
     expect(result.length).toEqual(3);
     done();
   });
 
   test("reset result", async done => {
-    Ticktack.reset();
-    const result = await Ticktack.getResult();
+    Exectime.reset();
+    const result = await Exectime.getResult();
     expect(result.length).toEqual(0);
     done();
   });
