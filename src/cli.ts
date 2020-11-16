@@ -8,14 +8,19 @@ const pkg = require("../package.json");
 const version = pkg.version as string;
 const now = new Date();
 
-const info = (message: string, prefix = "Exectime: ") => {
-  if (message !== "") {
-    process.stdout.write(prefix + message + EOL);
+type MessageType = "json" | "info" | "command" | "force";
+const MESSAGE_TYPE: MessageType[] = ["json", "info", "command", "force"];
+let messageTypes: MessageType[] = [];
+
+const showMessage = (message: string, messageType: MessageType) => {
+  const canShowMessage = message !== "" && messageTypes.includes(messageType);
+  if (canShowMessage || messageType === "force") {
+    process.stdout.write(message + EOL);
   }
 };
 
 export const shell = (command: string, cwd: string = process.cwd()): execa.ExecaChildProcess<string> => {
-  info(command, "");
+  showMessage(command, "command");
   return execa(command, {
     stdio: ["pipe", "pipe", "inherit"],
     shell: true,
@@ -34,6 +39,10 @@ const DEFAULT_NAME = "shell";
 const ENV_EXECTIME_NAME = process.env.EXECTIME_NAME;
 const ENV_EXECTIME_OUTPUT_PATH = process.env.EXECTIME_OUTPUT_PATH;
 
+const isMessageType = (value: any): value is MessageType => {
+  return MESSAGE_TYPE.includes(value);
+};
+
 const validate = (args: commander.Command): CLIArguments => {
   if (typeof args["c"] !== "string") {
     throw new TypeError("Not string");
@@ -43,6 +52,8 @@ const validate = (args: commander.Command): CLIArguments => {
   if (!name || typeof name !== "string") {
     throw new TypeError("For '-n' or 'EXECTIME_NAME', specify a character string that is greater than or equal to the position character.");
   }
+  const showLogPattern = typeof args["showLog"] === "string" ? args["showLog"] : "";
+  messageTypes = showLogPattern.split(",").filter(isMessageType);
   return {
     command: args.c,
     name,
@@ -64,7 +75,8 @@ const getCliArguments = (): CLIArguments => {
       "-o [output path]",
       "Output json file path. It can also be specified by the environment variable `export EXECTIME_OUTPUT_PATH='exectime.json'",
     )
-    .option("--show-settings")
+    .option("--show-log [string]", "command,data,info")
+    .option("--show-settings", "show current settings. not run.")
     .parse(process.argv);
   return validate(commander);
 };
@@ -77,7 +89,7 @@ const createOrOverride = (filename: string, outputData: Exectime.PerformanceMeas
   try {
     if (!fs.existsSync(filename)) {
       fs.writeFileSync(filename, JSON.stringify(outputData, null, 2), { encoding: "utf-8" });
-      info(`create ${filename}`);
+      showMessage(`Create File: "${filename}".`, "info");
       return;
     }
     const rawText = fs.readFileSync(filename, { encoding: "utf-8" });
@@ -88,15 +100,20 @@ const createOrOverride = (filename: string, outputData: Exectime.PerformanceMeas
     restoreData.data = restoreData.data.concat(outputData.data);
 
     fs.writeFileSync(filename, JSON.stringify(restoreData, null, 2), { encoding: "utf-8" });
-    info(`update ${filename}`);
+    showMessage(`Update file "${filename}".`, "info");
   } catch (error) {
     throw new Error(error);
   }
 };
 
 const showSetting = (args: CLIArguments) => {
-  const result = [`output file path : ${args.output || ""}`, `name             : ${args.name}`, `command          : ${args.command}`].join(EOL);
-  info(result, "");
+  const result = [
+    `Output file path : ${args.output || ""}`,
+    `Name             : ${args.name}`,
+    `Command          : ${args.command}`,
+    `Show message type: ${messageTypes.join(", ")}`,
+  ].join(EOL);
+  showMessage(result, "force");
 };
 
 const main = async () => {
@@ -106,8 +123,8 @@ const main = async () => {
     return;
   }
   const sh = Exectime.wrapAsync(shell, { name: args.name });
-  const { stdout } = await sh(args.command);
-  info(stdout, "");
+  const { stdout: message } = await sh(args.command);
+  showMessage(message, "command");
   const data = (await Exectime.getResult()).map(entry => Exectime.convert(now.getTime(), entry));
   const result: Exectime.PerformanceMeasurementResult = {
     meta: {
@@ -120,7 +137,7 @@ const main = async () => {
   if (args.output) {
     createOrOverride(args.output, result);
   } else {
-    info(JSON.stringify(result, null, 2), "");
+    showMessage(JSON.stringify(result, null, 2), "json");
   }
 };
 

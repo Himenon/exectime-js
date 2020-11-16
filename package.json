@@ -1,6 +1,6 @@
 {
   "name": "@himenon/exectime",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "private": true,
   "description": "Tool to measure execution time of CLI and JavaScript",
   "keywords": [
