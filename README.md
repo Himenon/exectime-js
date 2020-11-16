@@ -25,11 +25,11 @@ exectime -n "sleepCommand" -o "exectime.json" -c "sleep 5"
 ### Show current settings
 
 ```bash
-$ exectime -n "sleepCommand" -o "exectime.json" -c "sleep 5" --show-log info,command  --show-settings
+$ exectime -n "sleepCommand" -o "exectime.json" -c "sleep 5" --show info,command,settings
 output file path : exectime.json
 name             : sleepCommand
 command          : sleep 5
-Show message type: info, command
+Show message type: info, command, settings
 ```
 
 ## API

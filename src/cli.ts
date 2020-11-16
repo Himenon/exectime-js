@@ -8,8 +8,8 @@ const pkg = require("../package.json");
 const version = pkg.version as string;
 const now = new Date();
 
-type MessageType = "json" | "info" | "command" | "force";
-const MESSAGE_TYPE: MessageType[] = ["json", "info", "command", "force"];
+type MessageType = "json" | "info" | "command" | "force" | "settings";
+const MESSAGE_TYPE: MessageType[] = ["json", "info", "command", "force", "settings"];
 let messageTypes: MessageType[] = [];
 
 const showMessage = (message: string, messageType: MessageType) => {
@@ -52,13 +52,13 @@ const validate = (args: commander.Command): CLIArguments => {
   if (!name || typeof name !== "string") {
     throw new TypeError("For '-n' or 'EXECTIME_NAME', specify a character string that is greater than or equal to the position character.");
   }
-  const showLogPattern = typeof args["showLog"] === "string" ? args["showLog"] : "";
+  const showLogPattern = typeof args["show"] === "string" ? args["show"] : "";
   messageTypes = showLogPattern.split(",").filter(isMessageType);
   return {
     command: args.c,
     name,
     output: ENV_EXECTIME_OUTPUT_PATH || args["o"],
-    isShowSettings: !!args["showSettings"],
+    isShowSettings: messageTypes.includes("settings"),
   };
 };
 
@@ -75,8 +75,7 @@ const getCliArguments = (): CLIArguments => {
       "-o [output path]",
       "Output json file path. It can also be specified by the environment variable `export EXECTIME_OUTPUT_PATH='exectime.json'",
     )
-    .option("--show-log [string]", "command,data,info")
-    .option("--show-settings", "show current settings. not run.")
+    .option("--show [string]", "Comma separated string. [command|data|info|json|settings]")
     .parse(process.argv);
   return validate(commander);
 };
