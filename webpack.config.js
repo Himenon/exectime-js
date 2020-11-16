@@ -14,8 +14,8 @@ module.exports = {
   target: ["web"],
   output: {
     path: path.join(process.cwd(), "dist"),
-    filename: "ticktack.min.js",
-    library: "Ticktack",
+    filename: "exectime.min.js",
+    library: "Exectime",
     libraryTarget: "umd",
   },
   module: {

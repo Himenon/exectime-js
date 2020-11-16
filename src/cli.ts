@@ -1,5 +1,5 @@
 import { EOL } from "os";
-import * as Ticktack from "./";
+import * as Exectime from "./";
 import * as fs from "fs";
 import execa from "execa";
 import commander from "commander";
@@ -8,8 +8,8 @@ const pkg = require("../package.json");
 const version = pkg.version as string;
 const now = new Date();
 
-type MessageType = "json" | "info" | "command" | "force";
-const MESSAGE_TYPE: MessageType[] = ["json", "info", "command", "force"];
+type MessageType = "json" | "info" | "command" | "force" | "settings";
+const MESSAGE_TYPE: MessageType[] = ["json", "info", "command", "force", "settings"];
 let messageTypes: MessageType[] = [];
 
 const showMessage = (message: string, messageType: MessageType) => {
@@ -36,8 +36,8 @@ export interface CLIArguments {
 }
 
 const DEFAULT_NAME = "shell";
-const ENV_TICKTACK_NAME = process.env.TICKTACK_NAME;
-const ENV_TICKTACK_OUTPUT_PATH = process.env.TICKTACK_OUTPUT_PATH;
+const ENV_EXECTIME_NAME = process.env.EXECTIME_NAME;
+const ENV_EXECTIME_OUTPUT_PATH = process.env.EXECTIME_OUTPUT_PATH;
 
 const isMessageType = (value: any): value is MessageType => {
   return MESSAGE_TYPE.includes(value);
@@ -48,17 +48,17 @@ const validate = (args: commander.Command): CLIArguments => {
     throw new TypeError("Not string");
   }
   // cli arguments > ENV > DEFAULT_NAME
-  const name = args["n"] === DEFAULT_NAME ? ENV_TICKTACK_NAME || DEFAULT_NAME : args["n"] || ENV_TICKTACK_NAME;
+  const name = args["n"] === DEFAULT_NAME ? ENV_EXECTIME_NAME || DEFAULT_NAME : args["n"] || ENV_EXECTIME_NAME;
   if (!name || typeof name !== "string") {
-    throw new TypeError("For '-n' or 'TICKTACK_NAME', specify a character string that is greater than or equal to the position character.");
+    throw new TypeError("For '-n' or 'EXECTIME_NAME', specify a character string that is greater than or equal to the position character.");
   }
-  const showLogPattern = typeof args["showLog"] === "string" ? args["showLog"] : "";
+  const showLogPattern = typeof args["show"] === "string" ? args["show"] : "";
   messageTypes = showLogPattern.split(",").filter(isMessageType);
   return {
     command: args.c,
     name,
-    output: ENV_TICKTACK_OUTPUT_PATH || args["o"],
-    isShowSettings: !!args["showSettings"],
+    output: ENV_EXECTIME_OUTPUT_PATH || args["o"],
+    isShowSettings: messageTypes.includes("settings"),
   };
 };
 
@@ -68,15 +68,14 @@ const getCliArguments = (): CLIArguments => {
     .option("-c [command]", "shell command")
     .option(
       "-n [name]",
-      "For performance recording. It can also be specified by the environment variable `export TICKTACK_NAME='shell'`",
+      "For performance recording. It can also be specified by the environment variable `export EXECTIME_NAME='shell'`",
       DEFAULT_NAME,
     )
     .option(
       "-o [output path]",
-      "Output json file path. It can also be specified by the environment variable `export TICKTACK_OUTPUT_PATH='ticktack.json'",
+      "Output json file path. It can also be specified by the environment variable `export EXECTIME_OUTPUT_PATH='exectime.json'",
     )
-    .option("--show-log [string]", "command,data,info")
-    .option("--show-settings", "show current settings. not run.")
+    .option("--show [string]", "Comma separated string. [command|data|info|json|settings]")
     .parse(process.argv);
   return validate(commander);
 };
@@ -85,7 +84,7 @@ const getCliArguments = (): CLIArguments => {
  * - すでにファイルが存在する場合は上書きする
  * - ファイルが存在しない場合は作成する
  */
-const createOrOverride = (filename: string, outputData: Ticktack.PerformanceMeasurementResult): void => {
+const createOrOverride = (filename: string, outputData: Exectime.PerformanceMeasurementResult): void => {
   try {
     if (!fs.existsSync(filename)) {
       fs.writeFileSync(filename, JSON.stringify(outputData, null, 2), { encoding: "utf-8" });
@@ -93,7 +92,7 @@ const createOrOverride = (filename: string, outputData: Ticktack.PerformanceMeas
       return;
     }
     const rawText = fs.readFileSync(filename, { encoding: "utf-8" });
-    const restoreData: Ticktack.PerformanceMeasurementResult = JSON.parse(rawText);
+    const restoreData: Exectime.PerformanceMeasurementResult = JSON.parse(rawText);
 
     restoreData.meta.version = outputData.meta.version;
     restoreData.meta.updatedAt = outputData.meta.updatedAt;
@@ -122,11 +121,11 @@ const main = async () => {
     showSetting(args);
     return;
   }
-  const sh = Ticktack.wrapAsync(shell, { name: args.name });
+  const sh = Exectime.wrapAsync(shell, { name: args.name });
   const { stdout: message } = await sh(args.command);
   showMessage(message, "command");
-  const data = (await Ticktack.getResult()).map(entry => Ticktack.convert(now.getTime(), entry));
-  const result: Ticktack.PerformanceMeasurementResult = {
+  const data = (await Exectime.getResult()).map(entry => Exectime.convert(now.getTime(), entry));
+  const result: Exectime.PerformanceMeasurementResult = {
     meta: {
       version,
       createdAt: now.toISOString(),

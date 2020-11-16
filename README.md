@@ -1,4 +1,4 @@
-# @himenon/ticktack
+# @himenon/exectime
 
 Tool to measure execution time of CLI and JavaScript.
 It supports both the browser and NodeJS environments.
@@ -6,41 +6,41 @@ It supports both the browser and NodeJS environments.
 ## Install
 
 ```bash
-yarn global add @himenon/ticktack
+yarn global add @himenon/exectime
 ```
 
 ## CLI
 
 ```ts
-export TICKTACK_OUTPUT_PATH="performance.json"
-export TICKTACK_NAME="my"
+export EXECTIME_OUTPUT_PATH="performance.json"
+export EXECTIME_NAME="my"
 
 // Use environment settings
-ticktack -c "sleep 2"
+exectime -c "sleep 2"
 
 // Use argument settings
-ticktack -n "sleepCommand" -o "ticktack.json" -c "sleep 5"
+exectime -n "sleepCommand" -o "exectime.json" -c "sleep 5"
 ```
 
 ### Show current settings
 
 ```bash
-$ ticktack -n "sleepCommand" -o "ticktack.json" -c "sleep 5" --show-log info,command  --show-settings
-output file path : ticktack.json
+$ exectime -n "sleepCommand" -o "exectime.json" -c "sleep 5" --show info,command,settings
+output file path : exectime.json
 name             : sleepCommand
 command          : sleep 5
-Show message type: info, command
+Show message type: info, command, settings
 ```
 
 ## API
 
 ```ts
-import * as Ticktack from "@himenon/ticktack";
+import * as Exectime from "@himenon/exectime";
 
 const wait = async ms => new Promise(resolve => setTimeout(resolve, ms));
-const perfWait = Ticktack.wrapAsync(wait, { name: "wait", label: "timer" });
+const perfWait = Exectime.wrapAsync(wait, { name: "wait", label: "timer" });
 await Promise.all([perfWait(1000), perfWait(500), perfWait(1200), perfWait(1300)]);
-await Ticktack.getResult();
+await Exectime.getResult();
 ```
 
 ## Development
@@ -65,8 +65,8 @@ await Ticktack.getResult();
 
 ## Release
 
-- Automatic version updates are performed when merged into the `default` branch.
+- Automatic version updates are performed when merged into the `main` branch.
 
 ## LICENCE
 
-[@himenon/ticktack](https://github.com/Himenon/ticktack-js)・MIT
+[@himenon/exectime](https://github.com/Himenon/exectime-js)・MIT
