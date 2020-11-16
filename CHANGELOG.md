@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.0"></a>
+# 0.2.0 (2020-11-16)
+
+
+### Features
+
+* change package name ([#8](https://github.com/Himenon/exectime-js/issues/8)) ([155a7e3](https://github.com/Himenon/exectime-js/commit/155a7e3))
+
+
+
+
+
 <a name="0.1.2"></a>
 
 ## 0.1.2 (2020-11-13)
