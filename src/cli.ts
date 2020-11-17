@@ -57,7 +57,7 @@ const validate = (args: commander.Command): CLIArguments => {
   return {
     command: args.c,
     name,
-    output: ENV_EXECTIME_OUTPUT_PATH || args["o"],
+    output: args["o"] || ENV_EXECTIME_OUTPUT_PATH,
     isShowSettings: messageTypes.includes("settings"),
   };
 };
