@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.1"></a>
+## 0.2.1 (2020-11-17)
+
+
+### Bug Fixes
+
+* Change output priority ([#9](https://github.com/Himenon/exectime-js/issues/9)) ([2a52bd1](https://github.com/Himenon/exectime-js/commit/2a52bd1))
+
+
+
+
+
 <a name="0.2.0"></a>
 # 0.2.0 (2020-11-16)
 
